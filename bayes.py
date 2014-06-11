@@ -1,5 +1,7 @@
+import random
+from nltk.corpus import movie_reviews
 from text.classifiers import NaiveBayesClassifier
-from text.blob import TextBlob
+random.seed(1)
  
 train = [
     ('I love this sandwich.', 'pos'),
@@ -20,26 +22,25 @@ test = [
     ("I feel amazing!", 'pos'),
     ('Gary is a friend of mine.', 'pos'),
     ("I can't believe I'm doing this.", 'neg')
- ]
+]
+ 
 cl = NaiveBayesClassifier(train)
  
-# Classifier in action
-print(cl.classify("Their burgers are amazing."))  # "pos"
-print(cl.classify("I don't like their pizza."))   # "neg"
- 
-# Classify a TextBlob
-blob = TextBlob("The beer was amazing. But the hangover was horrible. "
-                "My boss was not pleased.", classifier=cl)
-print(blob)
-print '______________'
-print(blob.classify())
- 
-for sentence in blob.sentences:
-    print(sentence)
-    print(sentence.classify())
- 
-#To Compute accuracy
-print("Accuracy: {0}".format(cl.accuracy(test)))
+# Grab some movie review data
+reviews = [(list(movie_reviews.words(fileid)), category)
+              for category in movie_reviews.categories()
+              for fileid in movie_reviews.fileids(category)]
 
+random.shuffle(reviews)
+
+new_train, new_test = reviews[0:100], reviews[101:200]
+ 
+# Update the classifier with the new training data
+cl.update(new_train)
+ 
+# Compute accuracy
+accuracy = cl.accuracy(test + new_test)
+print("Accuracy: {0}".format(accuracy))
+ 
 # Show 5 most informative features
 cl.show_informative_features(5)
