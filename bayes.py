@@ -31,16 +31,17 @@ reviews = [(list(movie_reviews.words(fileid)), category)
               for category in movie_reviews.categories()
               for fileid in movie_reviews.fileids(category)]
 
+cl.update(reviews[101:200])
+
+
 random.shuffle(reviews)
+
+print type(reviews)
+
+for it in reviews[0:4]:
+	print it  
+	print 'Sentiment Analysis:',cl.classify(it[0])
+
 
 new_train, new_test = reviews[0:100], reviews[101:200]
  
-# Update the classifier with the new training data
-cl.update(new_train)
- 
-# Compute accuracy
-accuracy = cl.accuracy(test + new_test)
-print("Accuracy: {0}".format(accuracy))
- 
-# Show 5 most informative features
-cl.show_informative_features(5)
